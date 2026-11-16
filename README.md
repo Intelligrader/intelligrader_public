@@ -46,4 +46,4 @@ frontend/   Client call from the Next.js app to the grading API
 ```
 
 ## Team
-Praneet Dumpa · Devom Brahmbhatt
+Praneet Dumpa · Devom Brahmbhatt · Satya Lakkaraju · Jacob Wu · Preston Lee
