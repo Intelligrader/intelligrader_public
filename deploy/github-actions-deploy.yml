@@ -1,0 +1,35 @@
+name: CI-CD Deployment Pipeline
+
+on:
+  push:
+    branches: [ "main" ]  
+
+jobs:
+  deploy:
+    runs-on: self-hosted  # Targets Lightsail server
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy with Docker Compose
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          docker compose -p intelligrader-prod -f docker-compose.main.yml up -d --build --remove-orphans
+          
+          docker image prune -f
+
+      - name: Health Check (Main)
+        run: |
+          chmod +x scripts/health-check-main.sh
+          scripts/health-check-main.sh
+
+      - name: Show Compose Logs (Main, on failure)
+        if: ${{ failure() }}
+        run: |
+          chmod +x scripts/show-compose-logs.sh
+          scripts/show-compose-logs.sh docker-compose.main.yml intelligrader-prod
+
+      - name: Status Check
+        run: docker ps
